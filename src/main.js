@@ -18,7 +18,7 @@ function handleSearch(event) {
   const query = form.querySelector('input').value.trim();
 
   if (query) {
-    showLoadingString();
+    showLoader();
 
     fetchImages(query)
       .then(images => {
@@ -36,7 +36,7 @@ function handleSearch(event) {
       })
       .catch(onFetchError)
       .finally(() => {
-        hideLoadingString();
+        hideLoader();
         form.reset();
       });
   } else {
@@ -118,12 +118,12 @@ function onFetchError() {
   });
 }
 
-function showLoadingString() {
-  const loadingString = document.querySelector('.loading-string');
+function showLoader() {
+  const loadingString = document.querySelector('.loader');
   loadingString.classList.remove('hidden');
 }
 
-function hideLoadingString() {
-  const loadingString = document.querySelector('.loading-string');
+function hideLoader() {
+  const loadingString = document.querySelector('.loader');
   loadingString.classList.add('hidden');
 }
