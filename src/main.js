@@ -1,11 +1,13 @@
 import iziToast from 'izitoast';
 import 'izitoast/dist/css/iziToast.min.css';
+import SimpleLightbox from 'simplelightbox';
+import 'simplelightbox/dist/simple-lightbox.min.css';
 
 const API_KEY = '41875605-6b47be3c8e074a549a6d5f149';
 const BASE_URL = 'https://pixabay.com/api';
 
 const searchForm = document.querySelector('form');
-const imagesContainer = document.querySelector('.images-container');
+const imagesContainer = document.querySelector('.gallery-container');
 
 searchForm.addEventListener('submit', handleSearch);
 
@@ -16,15 +18,36 @@ function handleSearch(event) {
   const query = form.querySelector('input').value.trim();
 
   if (query) {
+    showLoadingString();
+
     fetchImages(query)
-      .then(showImagesGallery)
+      .then(images => {
+        if (images.length === 0) {
+          iziToast.show({
+            message:
+              'Sorry, there are no images matching your search query. Please try again!',
+            messageColor: 'white',
+            position: 'topRight',
+            color: 'red',
+          });
+        } else {
+          showImagesGallery(images);
+        }
+      })
       .catch(onFetchError)
-      .finally(() => form.reset());
+      .finally(() => {
+        hideLoadingString();
+        form.reset();
+      });
   } else {
     iziToast.show({
-      message:
-        'Sorry, there are no images matching your search query. Please try again!',
+      message: 'Please enter a search query!',
+      messageColor: 'white',
+      position: 'topRight',
+      color: 'red',
     });
+
+    imagesContainer.innerHTML = '';
   }
 }
 
@@ -42,12 +65,6 @@ function fetchImages(query) {
       throw new Error(response.statusText);
     }
     return response.json().then(data => {
-      if (data.hits.length === 0) {
-        iziToast.show({
-          message:
-            'Sorry, there are no images matching your search query. Please try again!',
-        });
-      }
       return data.hits;
     });
   });
@@ -65,27 +82,48 @@ function showImagesGallery(images) {
     comments,
     downloads,
   }) => `
-  <ul class="images-list">
-    <li class="image-item">
-      <a class="large-image-link" href="${largeImageURL}">
+  
+    <li class="gallery">
+      <a href="${largeImageURL}">
         <img class="image-preview" src="${webformatURL}" alt="${tags}">
       </a>
-      <p class="image-item-description">Likes ${likes}</p>
-      <p class="image-item-description">Views ${views}</p>
-      <p class="image-item-description">Comments ${comments}</p>
-      <p class="image-item-description">Downloads ${downloads}</p>
+      <div class="image-description">
+      <p>Likes ${likes}</p>
+      <p>Views ${views}</p>
+      <p>Comments ${comments}</p>
+      <p>Downloads ${downloads}</p>
+      </div>
     </li>
-  </ul>
+  
   `;
 
   const galleryMarkup = images.map(createQueryImagesMarkup).join('');
 
   imagesContainer.innerHTML = galleryMarkup;
+  lightbox.refresh();
 }
+
+const lightbox = new SimpleLightbox('.gallery a', {
+  captionsData: 'alt',
+  captionDelay: 250,
+});
 
 function onFetchError() {
   iziToast.show({
     message:
       'Sorry, there are no images matching your search query. Please try again!',
+    messageColor: 'white',
+    position: 'topRight',
+    color: 'red',
   });
+}
+
+function showLoadingString() {
+  const loadingString = document.querySelector('.loading-string');
+  loadingString.classList.remove('hidden');
+}
+
+function hideLoadingString() {
+  const loadingString = document.querySelector('.loading-string');
+  loadingString.classList.add('hidden');
 }

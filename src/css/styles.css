@@ -27,6 +27,9 @@
 }
 
 body {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
   margin-top: 28px;
 }
 
@@ -34,6 +37,7 @@ form {
   display: flex;
   justify-content: center;
   gap: 8px;
+  margin-bottom: 32px;
 }
 
 input,
@@ -85,13 +89,35 @@ button:focus {
   background: #6c8cff;
 }
 
-.images-container {
+.loading-string {
+  color: #2e2f42;
+  font-size: 16px;
+}
+
+.hidden {
+  display: none;
+}
+
+.gallery-container {
   display: flex;
   flex-wrap: wrap;
+  max-width: 1158px;
+  margin: 0 auto;
+  gap: 24px;
+  list-style: none;
+}
+
+.gallery {
+  width: calc((100% - 48px) / 3);
 }
 
 .image-preview {
   width: 100%;
-  height: auto;
-  border: 1px solid #ddd;
+  height: 200px;
+  object-fit: cover;
+}
+
+.image-description {
+  display: flex;
+  margin-top: 8px;
 }
