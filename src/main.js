@@ -22,7 +22,8 @@ function handleSearch(event) {
       .finally(() => form.reset());
   } else {
     iziToast.show({
-      message: 'Please enter a search query!',
+      message:
+        'Sorry, there are no images matching your search query. Please try again!',
     });
   }
 }
@@ -40,7 +41,15 @@ function fetchImages(query) {
     if (!response.ok) {
       throw new Error(response.statusText);
     }
-    return response.json();
+    return response.json().then(data => {
+      if (data.hits.length === 0) {
+        iziToast.show({
+          message:
+            'Sorry, there are no images matching your search query. Please try again!',
+        });
+      }
+      return data.hits;
+    });
   });
 }
 
