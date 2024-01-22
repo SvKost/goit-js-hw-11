@@ -18,6 +18,7 @@ function handleSearch(event) {
   const query = form.querySelector('input').value.trim();
 
   if (query) {
+    imagesContainer.innerHTML = '';
     showLoader();
 
     fetchImages(query)
@@ -64,9 +65,7 @@ function fetchImages(query) {
     if (!response.ok) {
       throw new Error(response.statusText);
     }
-    return response.json().then(data => {
-      return data.hits;
-    });
+    return response.json().then(data => data.hits);
   });
 }
 
@@ -99,7 +98,7 @@ function showImagesGallery(images) {
 
   const galleryMarkup = images.map(createQueryImagesMarkup).join('');
 
-  imagesContainer.innerHTML = galleryMarkup;
+  imagesContainer.insertAdjacentHTML('beforeend', galleryMarkup);
   lightbox.refresh();
 }
 
